@@ -1,0 +1,545 @@
+:root {
+    --primary-color: #1a237e;
+    --secondary-color: #7c4dff;
+    --background-color: #0a1929;
+    --surface-color: #132f4c;
+    --text-color: #ffffff;
+    --text-secondary: #b2bac2;
+    --accent-color: #5090d3;
+    --error-color: #ff1744;
+    --success-color: #00c853;
+    --header-height: 70px;
+    --content-max-width: 1400px;
+    --card-min-width: 200px;
+    --card-max-width: 300px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header styles */
+header {
+    background: linear-gradient(to bottom, var(--surface-color), rgba(19, 47, 76, 0.8));
+    padding: 0.5rem;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    height: var(--header-height);
+}
+
+nav {
+    max-width: var(--content-max-width);
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 100%;
+    padding: 0 1rem;
+    gap: 1rem;
+}
+
+.nav-left {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.nav-right {
+    flex: 1;
+    max-width: 600px;
+}
+
+.search-container {
+    display: flex;
+    gap: 0.5rem;
+    width: 100%;
+}
+
+#searchInput {
+    flex: 1;
+    min-width: 120px;
+    padding: 0.8rem 1.2rem;
+    border: none;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-color);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+#searchInput:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 0 0 2px var(--accent-color);
+}
+
+#searchButton {
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(45deg, var(--accent-color), var(--secondary-color));
+    color: white;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+#searchButton:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(80, 144, 211, 0.4);
+}
+
+/* Categories Switcher */
+.category-btn {
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-color);
+    background: var(--surface-color);
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    white-space: nowrap;
+}
+
+.category-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(80, 144, 211, 0.3);
+}
+
+.category-btn.active {
+    background: linear-gradient(45deg, var(--accent-color), var(--secondary-color));
+    box-shadow: 0 8px 25px rgba(80, 144, 211, 0.4);
+}
+
+/* Main Content */
+main {
+    flex: 1;
+    padding: 2rem 1rem;
+    width: 100%;
+    max-width: var(--content-max-width);
+    margin: 0 auto;
+}
+
+/* Movies Grid */
+.movies-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.5rem;
+    padding: 1.5rem;
+}
+
+.movie-card {
+    position: relative;
+    background: var(--surface-color);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.3s ease;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+}
+
+.movie-card:hover {
+    transform: translateY(-5px);
+}
+
+.movie-poster-wrapper {
+    position: relative;
+    width: 100%;
+    padding-top: 150%; /* Соотношение сторон 2:3 для постера */
+    overflow: hidden;
+}
+
+.movie-poster {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.movie-card:hover .movie-poster {
+    transform: scale(1.05);
+}
+
+/* Информация о фильме под постером */
+.movie-info {
+    padding: 1rem;
+    background: var(--surface-color);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.movie-title {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin: 0;
+    line-height: 1.3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.movie-meta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.movie-year {
+    color: var(--text-secondary);
+}
+
+.movie-rating {
+    color: #ffd700;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.movie-rating::before {
+    content: "★";
+    margin-right: 2px;
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 768px) {
+    .movies-container {
+        grid-template-columns: repeat(2, 1fr); /* 2 карточки в ряд на мобильных */
+        gap: 1rem;
+        padding: 1rem;
+    }
+
+    .movie-info {
+        padding: 0.75rem;
+    }
+
+    .movie-title {
+        font-size: 0.9rem;
+    }
+
+    .movie-meta {
+        font-size: 0.8rem;
+        gap: 0.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .movies-container {
+        gap: 0.75rem;
+        padding: 0.75rem;
+    }
+
+    .movie-info {
+        padding: 0.5rem;
+    }
+}
+
+/* Loading state */
+.loading {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 40px;
+    color: var(--text-color);
+}
+
+/* Error state */
+.error {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 40px;
+    color: var(--error-color);
+}
+
+.error button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px;
+    background: var(--primary-color);
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.error button:hover {
+    background: var(--primary-color-dark);
+}
+
+/* Modal */
+.movie-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 2000;
+    overflow-y: auto;
+}
+
+.modal-content {
+    position: relative;
+    width: 100%;
+    max-width: var(--content-max-width);
+    margin: 2rem auto;
+    background: var(--background-color);
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.close-modal {
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
+    font-size: 2rem;
+    color: white;
+    cursor: pointer;
+    z-index: 2001;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 50%;
+}
+
+/* Player */
+.player-container {
+    width: 100%;
+    background: var(--surface-color);
+}
+
+.player-header {
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.player-controls {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.player-wrapper {
+    position: relative;
+    padding-top: 56.25%; /* 16:9 */
+    width: 100%;
+}
+
+#videoPlayer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+/* Footer */
+footer {
+    background: var(--surface-color);
+    padding: 1rem;
+    text-align: center;
+    margin-top: auto;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    :root {
+        --card-min-width: 180px;
+        --card-max-width: 250px;
+    }
+}
+
+@media (max-width: 768px) {
+    :root {
+        --header-height: auto;
+    }
+
+    nav {
+        flex-direction: column;
+        padding: 1rem;
+        gap: 1rem;
+    }
+
+    .nav-left {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .nav-right {
+        width: 100%;
+    }
+
+    .category-btn {
+        padding: 0.6rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    main {
+        padding: 1rem;
+    }
+
+    .movies-container {
+        gap: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    :root {
+        --card-min-width: 140px;
+        --card-max-width: 200px;
+    }
+
+    html {
+        font-size: 14px;
+    }
+
+    .search-container {
+        flex-direction: column;
+    }
+
+    #searchButton {
+        width: 100%;
+    }
+
+    .movie-title {
+        font-size: 1rem;
+    }
+
+    .player-controls {
+        flex-direction: column;
+    }
+
+    .modal-content {
+        margin: 1rem;
+    }
+
+    .close-modal {
+        right: 0.5rem;
+        top: 0.5rem;
+    }
+}
+
+/* Loading Spinner */
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid rgba(255, 255, 255, 0.1);
+    border-left-color: var(--accent-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Loading Status */
+.loading-status {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    gap: 1rem;
+}
+
+.loading-text {
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+}
+
+.loading-progress {
+    width: 100%;
+    max-width: 300px;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: var(--accent-color);
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+.progress-text {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    text-align: center;
+}
+
+/* Стили для индикатора загрузки */
+.loading-indicator {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    text-align: center;
+}
+
+.loading-indicator p {
+    margin-top: 1rem;
+    color: #666;
+    font-size: 1.1rem;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
