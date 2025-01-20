@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
     const searchInput = document.getElementById('searchInput');
     const searchButton = document.getElementById('searchButton');
     const moviesContainer = document.getElementById('moviesContainer');
@@ -13,6 +13,32 @@ document.addEventListener('DOMContentLoaded', function() {
     let player = null;
     let currentStreamData = null;
     let currentCategory = 'now';
+    let currentMirror = 'https://hdrezka.ag';
+
+    // Функция для проверки доступности зеркала
+    async function checkMirror(url) {
+        try {
+            const response = await fetch(url, { method: 'HEAD', timeout: 5000 });
+            return response.ok;
+        } catch {
+            return false;
+        }
+    }
+
+    // Функция для получения рабочего зеркала
+    async function getWorkingMirror() {
+        const mirrors = [
+            'https://hdrezka.ag',
+            'https://flymaterez.net'
+        ];
+
+        for (const mirror of mirrors) {
+            if (await checkMirror(mirror)) {
+                return mirror;
+            }
+        }
+        return mirrors[0]; // Возвращаем первое зеркало, если ни одно не доступно
+    }
 
     // Поиск фильмов
     searchButton.addEventListener('click', () => {
@@ -60,11 +86,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             `;
 
-            let url = `/${category}`;
+            // Проверяем и обновляем зеркало если текущее недоступно
+            if (!await checkMirror(currentMirror)) {
+                currentMirror = await getWorkingMirror();
+            }
+
+            let url = `${currentMirror}/${category}`;
             if (category === 'search' && query) {
                 url = `${url}?query=${encodeURIComponent(query)}`;
             }
+
             const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error('Ошибка при получении данных');
+            }
+            
             const movies = await response.json();
             
             moviesContainer.innerHTML = movies.map(movie => `
@@ -88,8 +124,6 @@ document.addEventListener('DOMContentLoaded', function() {
             // Добавляем обработчики для каждой карточки
             document.querySelectorAll('.movie-card').forEach(card => {
                 const url = card.dataset.url;
-
-                // Обработчик для всей карточки
                 card.addEventListener('click', () => {
                     if (url) {
                         openMovieModal(url);
@@ -99,7 +133,12 @@ document.addEventListener('DOMContentLoaded', function() {
             
         } catch (error) {
             console.error('Error loading movies:', error);
-            moviesContainer.innerHTML = '<div class="error">Ошибка при загрузке фильмов</div>';
+            moviesContainer.innerHTML = `
+                <div class="error">
+                    <p>Ошибка при загрузке фильмов</p>
+                    <button onclick="window.location.reload()">Попробовать снова</button>
+                </div>
+            `;
         }
     }
 
@@ -159,7 +198,7 @@ document.addEventListener('DOMContentLoaded', function() {
             updateLoadingProgress(30, 'Получение информации о фильме...');
             
             // Получаем информацию о стриме
-            const streamResponse = await fetch(`/movie/stream?url=${encodeURIComponent(url)}`);
+            const streamResponse = await fetch(`${currentMirror}/movie/stream?url=${encodeURIComponent(url)}`);
             const streamData = await streamResponse.json();
             
             if (streamData.error) {
@@ -247,7 +286,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const translation = translationSelect.value;
             const quality = qualitySelect.value;
             
-            const response = await fetch(`/movie/stream?url=${encodeURIComponent(currentStreamData.url)}&translation=${translation}&quality=${quality}`);
+            const response = await fetch(`${currentMirror}/movie/stream?url=${encodeURIComponent(currentStreamData.url)}&translation=${translation}&quality=${quality}`);
             const data = await response.json();
             
             if (data.error) {
@@ -337,6 +376,22 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Загружаем фильмы при загрузке страницы
-    loadMovies('now');
+    // Инициализация
+    async function initialize() {
+        try {
+            currentMirror = await getWorkingMirror();
+            await loadMovies('now');
+        } catch (error) {
+            console.error('Initialization error:', error);
+            moviesContainer.innerHTML = `
+                <div class="error">
+                    <p>Ошибка при инициализации. Пожалуйста, проверьте подключение к интернету.</p>
+                    <button onclick="window.location.reload()">Попробовать снова</button>
+                </div>
+            `;
+        }
+    }
+
+    // Запускаем инициализацию
+    initialize();
 });
